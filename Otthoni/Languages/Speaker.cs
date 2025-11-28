@@ -56,7 +56,7 @@ class Speaker
             default:
                 lingual = "a polyglot";
         }
-        Console.WriteLine(name + " can speak " + languages.size() + " languages - they are " + lingual+".");
+        Console.WriteLine(name + " can speak " + languages.size() + " language(s) - they are " + lingual+".");
     }
     public void speak(int index)
     {
