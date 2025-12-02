@@ -1,11 +1,12 @@
 using System;
-using Minesweeper;
 
 namespace Minesweeper;
 class Board
 {
     private Tile[,] tiles;
     private int x, y;
+    private bool left;
+    private int toClear;
     public Board(int x, int y)
     {
         tiles=new Tile[x,y];
@@ -18,17 +19,8 @@ class Board
         }
         this.x = x;
         this.y = y;
-    }
-    public void print()
-    {
-        for (int i = 0; i < x; i++)
-        {
-            for (int j = 0; j < y; j++)
-            {
-                Console.Write(tiles[i][j].print());
-            }
-            Console.WriteLine();
-        }
+        this.left= true;
+        this.toClear = x*y;
     }
     public fill(int mines)
     {
@@ -36,12 +28,13 @@ class Board
         while (mines>0)
         {
             int x = rnd.Next(0, this.x);
-            int y=rnd.Next(0, this.y);
+            int y = rnd.Next(0, this.y);
             if (tiles[x][y].isMine)
             {
                 continue;
             }
             tiles[x][y].makeIntoMine;
+            toClear--;
             for (int i=-1; i<2; i++)
             {
                 for (int j=-1; j<2; j++)
@@ -56,7 +49,33 @@ class Board
         }
         print();
     }
-    public void leftClick(int x, int y)
+    public void print()
+    {
+        for (int i = 0; i < x; i++)
+        {
+            for (int j = 0; j < y; j++)
+            {
+                Console.Write(tiles[i][j].printGood());
+            }
+            Console.WriteLine();
+        }
+    }
+    public void recursive(int x, int y)
+    {
+        if (x >= 0 && x < this.x && y >= 0 && y < this.y)
+        {
+            if (!tiles[x][y].isMine() && tiles[x][y].getNumber == 0)
+            {
+                tiles[x][y].reveal();
+                toClear--;
+                recursive(x - 1, y - 1);
+                recursive(x - 1, y + 1);
+                recursive(x + 1, y - 1);
+                recursive(x + 1, y + 1);
+            }
+        }
+    }
+    public bool leftClick(int x, int y)
     {
         if (tiles[x][y].isFlagged())
         {
@@ -64,12 +83,25 @@ class Board
         }
         else if (tiles[x][y].isHidden())
         {
-            tiles[x][y].reveal();
-            print();
+            if (tiles[x][y].reveal();)
+            {
+                toClear--;
+                recursive(x - 1, y - 1);
+                recursive(x - 1, y + 1);
+                recursive(x + 1, y - 1);
+                recursive(x + 1, y + 1);
+                print();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
             Console.WriteLine("Already removed!");
+            return true;
         }
     }
     public void rightClick(int x, int y)
@@ -82,6 +114,73 @@ class Board
         else
         {
             Console.WriteLine("Already removed!");
+        }
+    }
+    public void gameOver()
+    {
+        for (int i = 0; i < x; i++)
+        {
+            for (int j = 0; j < y; j++)
+            {
+                Console.Write(tiles[i][j].printBad());
+            }
+            Console.WriteLine();
+        }
+        Console.WriteLine();
+        Console.WriteLine("xx(");
+        Console.WriteLine();
+    }
+    public void play()
+    {
+        print();
+        while (true)
+        {
+            if (left)
+            {
+                Console.WriteLine("(mining)");
+            }
+            else
+            {
+                Console.WriteLine("(flagging)");
+            }
+            Console.Write(">");
+            string? command = Console.ReadLine();
+            if (command.Trim=="s")
+            {
+                left = !left;
+                continue;
+            }
+            try
+            {
+                string[] coo = command.Split(' ');
+                if (coo.Length != 2)
+                {
+                    throw new Exception();
+                }
+                if (left)
+                {
+                    if (!leftClick(coo[0], coo[1]))
+                    {
+                        gameOver();
+                        break;
+                    }
+                    if (toClear==0)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("B)");
+                        Console.WriteLine();
+                        break;
+                    }
+                }
+                else
+                {
+                    rightClick(coo[0], coo[1]);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Try typing that again!");
+            }
         }
     }
 }

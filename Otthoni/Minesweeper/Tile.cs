@@ -22,12 +22,40 @@ class Tile
     {
         return isMine;
     }
+    public int getNumber()
+    {
+        return number;
+    }
     public void increaseNumber()
     {
         this.number++;
     }
-    public char print()
+    public char printGood()
     {
+        if (isHidden)
+        {
+            return '#';
+        }
+        if (number>0)
+        {
+            return (char)number;
+        }
+        return ' ';
+    }
+    public char printBad()
+    {
+        if (flag && isMine)
+        {
+            return 'f';
+        }
+        if (flag && !isMine)
+        {
+            return '!';
+        }
+        if (isMine)
+        {
+            return '*';
+        }
         if (isHidden)
         {
             return '#';
@@ -42,10 +70,14 @@ class Tile
     {
         return isHidden;
     }
-    public void reveal()
+    public bool reveal()
     {
         isHidden = false;
-        flag = false;
+        if (isMine)
+        {
+            return false;
+        }
+        return true;
     }
     public void flag()
     {
