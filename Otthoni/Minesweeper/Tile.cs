@@ -18,6 +18,10 @@ class Tile
     {
         isMine = true;
     }
+    public void makeSafe()
+    {
+        isMine=false;
+    }
     public bool isMine()
     {
         return isMine;
@@ -29,6 +33,10 @@ class Tile
     public void increaseNumber()
     {
         this.number++;
+    }
+    public void decreaseNumber()
+    {
+        this.number--;
     }
     public char printGood()
     {

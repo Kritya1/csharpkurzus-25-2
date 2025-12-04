@@ -104,6 +104,45 @@ class Board
             return true;
         }
     }
+    public void safe(int x, int y)
+    {
+        if (tiles[x][y].isMine())
+        {
+            tiles[x][y].makeSafe();
+            for (int i = -1; i < 2; i++)
+            {
+                for (int j = -1; j < 2; j++)
+                {
+                    if (x + i >= 0 && x + i < this.x && y + j >= 0 && y + j < this.y)
+                    {
+                        tiles[x + i][y + j].decreaseNumber();
+                    }
+                }
+            }
+            Random rnd = new Random();
+            while (true)
+            {
+                int nx = rnd.Next(0, this.x);
+                int ny = rnd.Next(0, this.y);
+                if ((nx==x && ny==y) || tiles[nx][ny].isMine)
+                {
+                    continue;
+                }
+                tiles[x][y].makeIntoMine;
+                for (int i = -1; i < 2; i++)
+                {
+                    for (int j = -1; j < 2; j++)
+                    {
+                        if (nx + i >= 0 && nx + i < this.x && ny + j >= 0 && ny + j < this.y)
+                        {
+                            tiles[nx + i][ny + j].increaseNumber();
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
     public void rightClick(int x, int y)
     {
         if (tiles[x][y].isHidden())
@@ -133,6 +172,25 @@ class Board
     public void play()
     {
         print();
+        while (true)
+        {
+            Console.Write(">");
+            string? command = Console.ReadLine();
+            try
+            {
+                string[] coo = command.Split(' ');
+                if (coo.Length != 2)
+                {
+                    throw new Exception();
+                }
+                safe(coo[0], coo[1]);
+                break;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Try typing that again!");
+            }
+        }
         while (true)
         {
             if (left)
